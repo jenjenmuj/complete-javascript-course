@@ -170,7 +170,30 @@ var budgetController = (function() {
 
 })();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************** */
 //UI controller
+/******************************************/
 var UIController = (function() {
     
     var DOMstrings = {
@@ -268,7 +291,11 @@ var UIController = (function() {
             var type;
             obj.budget >= 0 ? type = 'inc' : type = 'exp';
 
-            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            //do not show plus or minus sign if the total budget is 0, but show 0.00
+
+            obj.budget === 0 ? document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget + '.00' : document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+
+            //document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
             document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
             document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
             
@@ -332,7 +359,32 @@ var UIController = (function() {
 })();
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************** */
 // Global app controller
+/*************************************** */
 var controller = (function(budgetCtrl, UICtrl) {
 
     var setupEventListeners = function() {
@@ -364,7 +416,7 @@ var controller = (function(budgetCtrl, UICtrl) {
         UICtrl.displayBudget(budget);
     };
 
-    var updateProcentages = function() {
+    var updatePercentages = function() {
         // calculate procentages
         budgetCtrl.calculatePercentages();
         // read them form budget condtroler
@@ -391,7 +443,7 @@ var controller = (function(budgetCtrl, UICtrl) {
             // 5. Calculate and update budget
             updateBudget();
             // 6. calculate and update percetanges
-            updateProcentages();
+            updatePercentages();
         }
     };
 
@@ -412,7 +464,7 @@ var controller = (function(budgetCtrl, UICtrl) {
             // 3. update and show new budget
             updateBudget();
              // 4. calculate and update percetanges
-            updateProcentages();
+            updatePercentages();
         }
     };
 
