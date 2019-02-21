@@ -65,12 +65,31 @@ var budgetController = (function() {
     };
 
     var calculateTotal = function(type) {
-        var sum = 0;
+        /* var sum = 0;
         data.allItems[type].forEach( function(cur) {
             sum += cur.value;
         });
-        data.totals[type] = sum;
+        data.totals[type] = sum; 
+        */
+
+        var sum = 0;
+        var allItems = allStorage();
+        console.log(allItems);
+    };
+
+    function allStorage() {
+
+        var archive = [],
+            keys = Object.keys(localStorage),
+            i = 0, key;
+    
+        for (; key = keys[i]; i++) {
+            archive.push( key + '=' + localStorage.getItem(key));
+        }
+    
+        return archive;
     }
+    
 
     var data = {
         allItems: {
@@ -90,7 +109,7 @@ var budgetController = (function() {
             var newItem, ID;
 
             //create new id
-            if (data.allItems[type].length > 0) {
+            if (localStorage.length > 0) {
                 ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
             } else {
                 ID = 0;
@@ -107,13 +126,15 @@ var budgetController = (function() {
             //push is to our dsata structure
             data.allItems[type].push(newItem);
 
+            // addint new item into local storage as an String which is JSON file 
+            localStorage.setItem((type + '-' + ID), JSON.stringify(newItem));
             //return the new element
             return newItem;
         },
 
         deleteItem: function(type, id) {
             //debugger;
-            var index, ids;
+            /* var index, ids;
             ids = data.allItems[type].map(function(current) {
                 return current.id;
             });
@@ -122,7 +143,8 @@ var budgetController = (function() {
 
             if(index !== -1) {
                 data.allItems[type].splice(index, 1);
-            }
+            } */
+            localStorage.removeItem(type + '-' + id);
         },
 
         calculateBudget: function() {
