@@ -46,15 +46,20 @@ var budgetController = (function() {
   };
 
   Expense.prototype.calcPercentage = function(totalIncome) {
+    var thisData;  
+    thisData = getLocalData;
     if (totalIncome > 0) {
-      this.percentage = Math.round((this.value / totalIncome) * 100);
+        thisData.percentage = Math.round((thisData.value / totalIncome) * 100);
     } else {
-      this.percentage = -1;
+        thisData.percentage = -1;
     }
   };
 
   Expense.prototype.getPercentage = function() {
-    return this.percentage;
+    var thisData;  
+    thisData = getLocalData;
+
+    return thisData.percentage;
   };
 
   var Income = function(id, description, value) {
@@ -63,31 +68,21 @@ var budgetController = (function() {
     this.value = value;
   };
 
-  var calculateTotal = function(type) {
-    /* var sum = 0;
-        data.allItems[type].forEach( function(cur) {
-            sum += cur.value;
-        });
-        data.totals[type] = sum; 
-        */
-
-    var sum = 0;
-    var allItems = allStorage();
-    console.log(allItems);
-  };
-
-  function allStorage() {
-    var archive = [],
-      keys = Object.keys(localStorage),
-      i = 0,
-      key;
-
-    for (; (key = keys[i]); i++) {
-      archive.push(key + "=" + localStorage.getItem(key));
-    }
-
-    return archive;
+  var Totals = function(exp, inc) {
+    this.exp = exp;  
+    this.inc = inc;
   }
+
+  var calculateTotal = function(type) {
+    var sum = 0,
+      thisData;
+    thisData = getLocalData();
+    thisData.allItems[type].forEach(function(cur) {
+      sum += cur.value;
+    });
+    setTotals(type, sum);
+    //thisData.totals[type] = sum;
+  };
 
   var data = {
     allItems: {
@@ -102,6 +97,13 @@ var budgetController = (function() {
     percentage: -1
   };
 
+  var Data = function(allItems, totals, budget, percentage) {
+      this.allItems = allItems;
+      this.totals = totals;
+      this.budget = budget;
+      this.percentage = percentage;
+  }
+
   function getLocalData() {
     var keys, thisData;
     keys = Object.keys(localStorage);
@@ -112,7 +114,41 @@ var budgetController = (function() {
       localStorage.setItem(localDataKey, JSON.stringify(data));
       thisData = JSON.parse(localStorage.getItem(localDataKey));
     }
+
+    thisData = new Data(thisData.allItems, thisData.totals, thisData.budget, thisData.percentage);
+
+    thisData.allItems.inc = thisData.allItems.inc.map(
+      inc => new Income(inc.id, inc.description, inc.value)
+    );
+    thisData.allItems.exp = thisData.allItems.exp.map(
+      exp => new Expense(exp.id, exp.description, exp.value)
+    );
+
+    thisData.totals =  new Totals(thisData.totals.exp, thisData.totals.inc);
+
     return thisData;
+  }
+
+  function setTotals(type, sum) {
+    var thisData;
+    thisData = getLocalData();
+
+    thisData.totals[type] = sum;
+    localStorage.setItem(localDataKey, JSON.stringify(thisData));
+  }
+
+  function setBudget(budget) {
+    var thisData;
+    thisData = getLocalData();
+    thisData.budget = budget;
+    localStorage.setItem(localDataKey, JSON.stringify(thisData));
+  }
+
+  function setPercentages() {
+    var thisData;
+    thisData = getLocalData();
+    thisData.percentages = percentages;
+    localStorage.setItem(localDataKey, JSON.stringify(thisData));
   }
 
   return {
@@ -160,50 +196,61 @@ var budgetController = (function() {
         thisData.allItems[type].splice(index, 1);
       }
       localStorage.setItem(localDataKey, JSON.stringify(thisData));
-
     },
 
     calculateBudget: function() {
       //calculate total income and expenses
+      debugger;
       calculateTotal("exp");
       calculateTotal("inc");
+      var thisData;
+      thisData = getLocalData();
 
       //calculate the budget: income - expenses
-      data.budget = data.totals.inc - data.totals.exp;
+      thisData.budget = thisData.totals.inc - thisData.totals.exp;
 
       //calculate the % of income that we spent
-      if (data.totals.inc > 0) {
-        data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+      if (thisData.totals.inc > 0) {
+        thisData.percentage = Math.round(
+          (thisData.totals.exp / thisData.totals.inc) * 100
+        );
       } else {
-        data.percentage = -1;
+        thisData.percentage = -1;
       }
+      localStorage.setItem(localDataKey, JSON.stringify(thisData));
     },
 
     calculatePercentages: function() {
-      data.allItems.exp.forEach(function(cur) {
-        cur.calcPercentage(data.totals.inc);
+      var thisData;
+      thisData = getLocalData();
+      thisData.allItems.exp.forEach(function(cur) {
+        cur.calcPercentage(thisData.totals.inc);
       });
     },
 
     getPercentage: function() {
-      var allPercentages = data.allItems.exp.map(function(cur) {
+      var thisData;
+      thisData = getLocalData();
+      var allPercentages = thisData.allItems.exp.map(function(cur) {
         return cur.getPercentage();
       });
       return allPercentages;
     },
 
     getBudget: function() {
+      var thisData;
+      thisData = getLocalData();
       return {
-        budget: data.budget,
-        percentage: data.percentage,
-        totalInc: data.totals.inc,
-        totalExp: data.totals.exp
+        budget: thisData.budget,
+        percentage: thisData.percentage,
+        totalInc: thisData.totals.inc,
+        totalExp: thisData.totals.exp
       };
-    },
-
+    }
+    /* 
     testing: function() {
       console.log(data);
-    }
+    } */
   };
 })();
 
