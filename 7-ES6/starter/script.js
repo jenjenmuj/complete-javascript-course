@@ -596,9 +596,104 @@ johnAtlete6.wonMedal();
 johnAtlete6.calculateAge();
  */
 
- 
 /******************************** */
 // Lecture: Coding challange 8
 /******************************** */
 
+class Town {
+  constructor(name, buildYear) {
+    this.name = name;
+    this.buildYear = buildYear;
+  }
 
+  calculateAverage(a, b) {
+    return a / b;
+  }
+}
+
+class Park extends Town {
+  constructor(name, buildYear, area, trees) {
+    super(name, buildYear);
+    this.area = area;
+    this.trees = trees;
+  }
+
+  calculateTreeDensity(parks) {}
+
+  returnBigPark() {
+    // return park with more than 1000 trees
+  }
+}
+
+class Street extends Town {
+  constructor(name, buildYear, streetLength, classification = "normal") {
+    super(name, buildYear);
+    this.streetLength = streetLength;
+    this.classification = classification;
+  }
+
+  calculateTotalLength() {
+    //calculate total lenght of streets
+  }
+
+  calculateClassifiction() {
+    // calculate classification from the length of street
+    //tiny 0 - 0.2
+    //small 0.2 - 0.4
+    //normal 0.4 - .6
+    //big 0.6 - 0.8
+    // huge 0.8 +
+  }
+}
+
+//const town = new Town('Prcice', 1990);
+
+const town = new Map();
+
+const park1 = new Park("Green Park", 2001, 4, 800);
+const park2 = new Park("National Park", 2002, 3, 1200);
+const park3 = new Park("Oak Park", 2003, 1, 200);
+const street1 = new Street("Ocean Avenue", 1999, 0.7);
+const street2 = new Street("Evergreen Street", 2008, 0.2);
+const street3 = new Street("4th Street", 2015);
+const street4 = new Street("Sunset Blvd", 1992, 1);
+town.set("park1", park1);
+town.set("park2", park2);
+town.set("park3", park3);
+town.set("street1", street1);
+town.set("street2", street2);
+town.set("street3", street3);
+town.set("street4", street4);
+
+function displayReport(town) {
+  let parks = new Map();
+  let streets = new Map();
+  let abs;
+  // fill maps with parks and streets
+  for (let [key, value] of town.entries()) {
+    if (key.includes("park")) parks.set(key, value);
+    else if (key.includes("street")) streets.set(value);
+  }
+
+  console.log(town);
+  //calculate tree density
+  parks.forEach((value, key) =>
+  
+    console.log(value + key + value.calculateAverage(parks.get("trees"), parks.get("area")))
+  );
+
+  console.log(`=====Parks Report=====`);
+  console.log(`Our parks has a tree density of `);
+
+  /*   town.forEach((value, key) =>
+    key.includes("park") ? parks.push(value) : parks
+  );
+
+  town.forEach((value, key) =>
+    key.includes("street") ? streets.push(value) : streets
+  ); */
+  console.log(parks);
+  console.log(streets);
+}
+
+displayReport(town);
