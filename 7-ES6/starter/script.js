@@ -618,22 +618,16 @@ class Park extends Town {
     this.trees = trees;
   }
 
-  calculateTreeDensity(parks) {}
-
   returnBigPark() {
-    // return park with more than 1000 trees
+    if (this.trees >= 1000) return true;
+    else return false;
   }
 }
 
 class Street extends Town {
-  constructor(name, buildYear, streetLength, classification = "normal") {
+  constructor(name, buildYear, streetLength = 0.5) {
     super(name, buildYear);
     this.streetLength = streetLength;
-    this.classification = classification;
-  }
-
-  calculateTotalLength() {
-    //calculate total lenght of streets
   }
 
   calculateClassifiction() {
@@ -643,20 +637,27 @@ class Street extends Town {
     //normal 0.4 - .6
     //big 0.6 - 0.8
     // huge 0.8 +
+    let ls = this.streetLength;
+    if (ls < 0.2) return "tiny";
+    if (ls >= 0.2 && ls < 0.4) return "small";
+    if (ls >= 0.4 && ls < 0.6) return "normal";
+    if (ls >= 0.6 && ls < 0.8) return "big";
+    if (ls >= 0.8) return "huge";
+    else return "normal";
   }
 }
 
-//const town = new Town('Prcice', 1990);
+const prcice = new Town("Prcice", 1990);
 
 const town = new Map();
 
 const park1 = new Park("Green Park", 2001, 4, 800);
 const park2 = new Park("National Park", 2002, 3, 1200);
-const park3 = new Park("Oak Park", 2003, 1, 200);
+const park3 = new Park("Oak Park", 2003, 2, 200);
 const street1 = new Street("Ocean Avenue", 1999, 0.7);
 const street2 = new Street("Evergreen Street", 2008, 0.2);
 const street3 = new Street("4th Street", 2015);
-const street4 = new Street("Sunset Blvd", 1992, 1);
+const street4 = new Street("Sunset Blvd", 1992, 0.1);
 town.set("park1", park1);
 town.set("park2", park2);
 town.set("park3", park3);
@@ -668,32 +669,79 @@ town.set("street4", street4);
 function displayReport(town) {
   let parks = new Map();
   let streets = new Map();
-  let abs;
+  let ageOfParks = 0;
+  let lengthOfAllStreets = 0;
+  let parksHeader = "",
+    parksAverageReport = "",
+    treeDensityReport = "",
+    bigParksReport = "",
+    streetsHeader = "";
+  streetsReport = "";
+  streetsLengthReport = "";
+  let thisYear = new Date().getFullYear();
   // fill maps with parks and streets
   for (let [key, value] of town.entries()) {
     if (key.includes("park")) parks.set(key, value);
-    else if (key.includes("street")) streets.set(value);
+    else if (key.includes("street")) streets.set(key, value);
   }
 
-  console.log(town);
+  ////////////////////PARKS
   //calculate tree density
-  parks.forEach((value, key) =>
-  
-    console.log(value + key + value.calculateAverage(parks.get("trees"), parks.get("area")))
+  parks.forEach(value => {
+    // calculate tree density and store it to new atribute
+    value.treeDensity = value.calculateAverage(value.trees, value.area);
+    // store all years combined into averageAgeOfPark variable
+    ageOfParks += thisYear - value.buildYear;
+    // create new atribute to park which have boolean type, if there is a more than 1000 trees
+    value.bigPark = value.returnBigPark();
+    treeDensityReport += `${value.name} has a tree density of ${
+      value.treeDensity
+    } trees per square km\n`;
+    value.bigPark === true
+      ? (bigParksReport += `${value.name} has more than 1000 trees\n`)
+      : false;
+  });
+
+  parksHeader = `=====Parks Report=====\n`;
+  parksAverageReport = `Our parks have an average age of ${prcice.calculateAverage(
+    ageOfParks,
+    parks.size
+  )} years\n`;
+  /////////////////////////////////////
+
+  function putAllStringTogearther(...report) {
+    let print = [...report];
+
+    for (let i = 0; i < print.length; i++) {
+      console.log(print[i]);
+    }
+  }
+  putAllStringTogearther(
+    parksHeader,
+    parksAverageReport,
+    treeDensityReport,
+    bigParksReport
   );
 
-  console.log(`=====Parks Report=====`);
-  console.log(`Our parks has a tree density of `);
+  ///////////////// STREETS
+  streetsHeader = `====Streets Report====\n`;
 
-  /*   town.forEach((value, key) =>
-    key.includes("park") ? parks.push(value) : parks
-  );
+  streets.forEach(value => {
+    lengthOfAllStreets += value.streetLength;
 
-  town.forEach((value, key) =>
-    key.includes("street") ? streets.push(value) : streets
-  ); */
-  console.log(parks);
-  console.log(streets);
+    value.classification = value.calculateClassifiction();
+    
+    streetsReport += `${value.name}, built in ${value.buildYear}, is a ${value.classification} street\n`
+  });
+
+  streetsLengthReport = `Our ${
+    streets.size
+  } streets have a total length of ${lengthOfAllStreets}km with average of ${prcice.calculateAverage(
+    lengthOfAllStreets,
+    streets.size
+  )}km\n`;
+
+  putAllStringTogearther(streetsHeader, streetsLengthReport, streetsReport);
 }
 
 displayReport(town);
