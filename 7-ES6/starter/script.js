@@ -834,7 +834,11 @@ function reportStreets(s) {
   console.log("---------STREETS REPORT-----------");
   const [totalLength, avgLength] = calc(s.map(el => el.length));
 
-  console.log(`Our ${s.length} streets have a total length of ${totalLength}km, with and average of ${avgLength}`);
+  console.log(
+    `Our ${
+      s.length
+    } streets have a total length of ${totalLength}km, with and average of ${avgLength}`
+  );
 
   s.forEach(el => el.classifyStreet());
 }
