@@ -14,10 +14,13 @@ class BudgetController {
 
   addItemToLocalStorage(input) {
     let map = new Map(JSON.parse(localStorage.getItem(input.type)));
-    let newItem = new Record(input.description, input.value);
+    let newID = this.createNewId(map);
+    let newItem = new Record(input.description, input.value, newID);
 
-    map.set(this.createNewId(map), newItem);
+    map.set(newID, newItem);
     localStorage.setItem(input.type, JSON.stringify([...map]));
+
+    return map.get(newID);
   }
 
   /*  getItemsFromLocalStorage() {
@@ -38,9 +41,10 @@ class BudgetController {
   }
 }
 class Record {
-  constructor(description, value) {
+  constructor(description, value, id) {
     this.description = description;
     this.value = value;
+    this.id = id;
     this.percentages = -1;
   }
 }
@@ -52,8 +56,43 @@ class UIController {
       addButton: ".add__btn",
       addType: ".add__type",
       addDescription: ".add__description",
-      addValue: ".add__value"
+      addValue: ".add__value",
+      expanseList: ".expenses__list",
+      incomeList: ".income__list"
     };
+  }
+
+  listItem(newItem) {
+    console.log(newItem);
+    if (newItem.type === "inc") {
+      document
+        .querySelector(this.DOMStrings.incomeList)
+        .insertAdjacentHTML(
+          "beforeend",
+          `<div class="item clearfix" id="${newItem.type}-${
+            newItem.id
+          }"> <div class="item__description">${
+            newItem.description
+          }</div><div class="right clearfix"><div class="item__value">${
+            newItem.value
+          }</div><div class="item__delete"><button class="item__delete--btn"><i ="ion-ios-close-outline"></i></button></div></div></div>`
+        );
+    } else if (newItem.type === "exp") {
+      document
+        .querySelector(this.DOMStrings.expanseList)
+        .insertAdjacentHTML(
+          "beforeend",
+          `<div class="item clearfix" id="${newItem.type}-${
+            newItem.id
+          }"><div class="item__description">${
+            newItem.description
+          }</div><div class="right clearfix"><div class="item__value">${
+            newItem.value
+          }</div><div class="item__percentage">${
+            newItem.percentages
+          }</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
+        );
+    } else console.log("no item type");
   }
 
   getInput() {
@@ -92,11 +131,12 @@ class AppController {
 
     // 1 get input
     const input = ctrlUI.getInput();
-
+    let newItem;
     // 2 add item into data structure
-    ctrlBudget.addItemToLocalStorage(input);
+    newItem = ctrlBudget.addItemToLocalStorage(input);
 
     // 3 list item into GUI
+    ctrlUI.listItem(newItem);
     // 4 clear fields
     // 5 update budget
     // 6 update percentages
