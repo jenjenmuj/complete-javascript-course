@@ -6,16 +6,20 @@ class BudgetController {
     if (localStorage.getItem("exp") === null) {
       localStorage.setItem("exp", JSON.stringify([...new Map()]));
       localStorage.setItem("inc", JSON.stringify([...new Map()]));
+      localStorage.setItem("totalExp", 0);
+      localStorage.setItem("totalInc", 0);
     } else {
       localStorage.setItem("exp", localStorage.getItem("exp"));
       localStorage.setItem("inc", localStorage.getItem("inc"));
+      localStorage.setItem("totalExp", localStorage.getItem("totalExp"));
+      localStorage.setItem("totalInc", localStorage.getItem("totalInc"));
     }
   }
 
   addItemToLocalStorage(input) {
-    let map = new Map(JSON.parse(localStorage.getItem(input.type)));
+    let map = this.getItemsFromLocalStorage(input.type);
     let newID = this.createNewId(map);
-    let newItem = new Record(input.description, input.value, newID);
+    let newItem = new Record(input.description, input.value, newID, input.type);
 
     map.set(newID, newItem);
     localStorage.setItem(input.type, JSON.stringify([...map]));
@@ -23,29 +27,41 @@ class BudgetController {
     return map.get(newID);
   }
 
-  /*  getItemsFromLocalStorage() {
-    thisData.allItems.inc = thisData.allItems.inc.map(
-      inc => new Income(inc.id, inc.description, inc.value)
-    );
-    thisData.allItems.exp = thisData.allItems.exp.map(
-      exp => new Expense(exp.id, exp.description, exp.value)
-    );
-  } */
+  getItemsFromLocalStorage(type) {
+    let map = new Map(JSON.parse(localStorage.getItem(type)));
+    return map;
+  }
 
   createNewId(map) {
     if (map.size !== 0) {
       const keys = [...map.keys()];
-      console.log(keys);
+      //console.log(keys);
       return keys[keys.length - 1] + 1;
     } else return 0;
   }
+
+  calculateBudget() {
+    let sum = 0;
+    let expenses = this.getItemsFromLocalStorage("exp");
+    let incomes = this.getItemsFromLocalStorage("inc");
+    expenses.forEach(el => sum += parseInt(el.value));
+    localStorage.setItem("totalExp", sum);
+    sum = 0;
+    incomes.forEach(el => sum += parseInt(el.value));
+    localStorage.setItem("totalInc", sum);
+  }
+
+  returnValue(input) {
+    return input.value;
+  }
 }
 class Record {
-  constructor(description, value, id) {
+  constructor(description, value, id, type) {
     this.description = description;
     this.value = value;
     this.id = id;
     this.percentages = -1;
+    this.type = type;
   }
 }
 
@@ -63,7 +79,7 @@ class UIController {
   }
 
   listItem(newItem) {
-    console.log(newItem);
+    //console.log(newItem);
     if (newItem.type === "inc") {
       document
         .querySelector(this.DOMStrings.incomeList)
@@ -93,6 +109,17 @@ class UIController {
           }</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>`
         );
     } else console.log("no item type");
+  }
+
+  clearFields() {
+    document.querySelector(this.DOMStrings.addDescription).value = "";
+    document.querySelector(this.DOMStrings.addValue).value = "";
+  }
+
+  updateUIBudget() {
+    let budget = ctrlBudget.calculateBudget();
+
+    //ctrlBudget.getBudget();
   }
 
   getInput() {
@@ -138,7 +165,9 @@ class AppController {
     // 3 list item into GUI
     ctrlUI.listItem(newItem);
     // 4 clear fields
+    ctrlUI.clearFields();
     // 5 update budget
+    ctrlUI.updateUIBudget();
     // 6 update percentages
   }
 
