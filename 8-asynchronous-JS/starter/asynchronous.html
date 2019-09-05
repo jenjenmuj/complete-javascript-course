@@ -44,24 +44,107 @@
 
         // getRecipe();
 
-        const getIDs = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve([132, 465, 798, 741]);
-            }, 1500);
-        });
+        // const getIDs = new Promise((resolve, reject) => {
+        //     setTimeout(() => {
+        //         resolve([132, 465, 798, 741]);
+        //     }, 1500);
+        // });
 
-        const getRecipe = new Promise(()=> {
-            setTimeout(() => {
-                resolve({title: "Fresh Tomato Pasta", publisher: "Frankie"})
+        // const getRecipe = recID => {
+        //     return new Promise((resolve, reject)=> {
+        //         setTimeout((id) => {
+        //             const recipe = {title: "Fresh Tomato Pasta", publisher: "Frankie"};
+        //             resolve(recipe);
+        //         }, 1500, recID);
+        //     });
+        // };
+
+        // const getRelated = publisher => {
+        //     return new Promise((resolve, reject) => {
+        //         setTimeout(pub => {
+        //             const recipe2 = {title: "Italian Pizza", publisher: "Frankie"}
+        //             resolve(`Publisher = ${pub}, recipe = ${recipe2.title}`);
+        //         }, 1500, publisher)
+        //     })
+        // }
+        
+        
+        // getIDs
+        // .then(IDs => {
+        //     console.log(IDs);
+        //     return getRecipe(IDs[2]);
+        // })
+        // .then(recipe => {
+        //     console.log(recipe);
+        //     return getRelated(recipe.publisher);
+        // }) 
+        // .then(recipe2 => {
+        //     console.log(recipe2);
+        // })
+        // .catch(error => {
+        //     console.log("Error!!");
+        // });
+
+        // async function getRecipesAW() {
+
+        //     const IDs = await getIDs;
+        //     console.log(IDs);
+        //     const recipe = await getRecipe(IDs[2]);
+        //     console.log(recipe);
+        //     const related = await getRelated(recipe.publisher);
+        //     console.log(related);
+            
+        //     return recipe;
+        // }
+
+        // getRecipesAW().then(result => console.log(result));
+
+        // console.log("Not waiting");
+
+
+        const idSF = 2487956;
+        const idLon = 44418;
+
+        function getWeather(woeid) {
+            fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`)
+            .then(result => {
+                //console.log(result);
+                return result.json();
             })
-        });
-        getIDs
-        .then(IDs => {
-            console.log(IDs);
-        })
-        .catch(error => {
-            console.log("Error!!");
-        });
+            .then(data => {
+                //console.log(data);
+                const today = data.consolidated_weather[0];
+                console.log(`Temperatures in ${data.title} stay between ${today.min_temp} and ${today.max_temp}.`);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        }
+        getWeather(idSF);
+        getWeather(idLon);
+
+        async function getWeatherAW(woeid) {
+            try {
+                const result = await fetch(`https://cors-anywhere.herokuapp.com/https://www.metaweather.com/api/location/${woeid}/`);
+
+                const data = await result.json();
+
+                const tommorrow = data.consolidated_weather[1];
+                console.log(`Temperatures in ${data.title} for tommorrow stay between ${tommorrow.min_temp} and ${tommorrow.max_temp}.`);
+                return data;
+            } catch(error) {
+                alert(error);
+            }
+            
+
+        }
+        getWeatherAW(idSF);
+        let dataLondon;
+        getWeatherAW(idLon).then(data => {
+            dataLondon = data;
+            console.log(data)
+            });
+
     </script>
 </body>
 </html>
