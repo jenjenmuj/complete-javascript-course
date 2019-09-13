@@ -1,10 +1,15 @@
-// Global app controller
-import axios from 'axios';
+import Search from './models/Search';
 
+// global state of the app
+/*
+Search object
+Current recipe object
+Shopping list obect
+Liked recipes
+*/
+const state = {};
 
-async function getResults(query) {
-     console.log('do change 222');
-}
+const search = new Search('pizza');
+console.log(search);
 
-getResults();
-//ef74bbc8c246f2bb6b6f5c5aa7ec31a5
+search.getResults();
