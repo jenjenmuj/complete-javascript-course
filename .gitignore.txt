@@ -1,1 +1,1 @@
-complete-javascript-course/9-forkify/starter/node_modules/
+./complete-javascript-course/9-forkify/starter/node_modules/
