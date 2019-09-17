@@ -40,8 +40,14 @@ elements.searchForm.addEventListener('submit', e => {
     controlSearch();
 });
 
-//const search = new Search('pizza');
-//console.log(search);
-
-//search.getResults();
-
+// event delegation
+elements.searchResPages.addEventListener('click', e => {
+    // implementing closest method, so if we click on text or icon of the button it will still work
+    const btn = e.target.closest('.btn-inline');
+    if (btn) {
+        // e are getting string from the dataset, so we have to convert it to decimal (10)
+        const goToPage = parseInt(btn.dataset.goto, 10);
+        searchView.clearResults();
+        searchView.renderResults(state.search.result, goToPage);
+    }
+});
