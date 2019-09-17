@@ -1,4 +1,5 @@
 import Search from './models/Search';
+import Recipe from './models/Recipe';
 import * as searchView from './views/searchView';
 import {elements, renderLoader, clearLoader} from './views/base';
 
@@ -11,6 +12,9 @@ Liked recipes
 */
 const state = {};
 
+/*
+* Seacrh Controller
+*/
 const controlSearch = async () => {
     // get query from the view
     const query = searchView.getInput(); //TODO
@@ -40,7 +44,7 @@ elements.searchForm.addEventListener('submit', e => {
     controlSearch();
 });
 
-// event delegation
+// event delegation for btns
 elements.searchResPages.addEventListener('click', e => {
     // implementing closest method, so if we click on text or icon of the button it will still work
     const btn = e.target.closest('.btn-inline');
@@ -51,3 +55,12 @@ elements.searchResPages.addEventListener('click', e => {
         searchView.renderResults(state.search.result, goToPage);
     }
 });
+
+
+/*
+* Recipe Controller
+*/
+
+const r = new Recipe(47746);
+r.getRecipe();
+console.log(r);
