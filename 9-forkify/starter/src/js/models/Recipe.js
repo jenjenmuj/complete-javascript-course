@@ -28,7 +28,7 @@ export default class Reipe {
         this.time = periods * 15;
     }
 
-    calcServing() {
+    calcServings() {
         this.servings = 4;
     }
 }
