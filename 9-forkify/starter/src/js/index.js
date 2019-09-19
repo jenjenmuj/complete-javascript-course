@@ -17,7 +17,7 @@ const state = {};
 */
 const controlSearch = async () => {
     // get query from the view
-    const query = searchView.getInput(); //TODO
+    const query = searchView.getInput(); 
 
     // if query 
     if(query) {
@@ -47,6 +47,7 @@ elements.searchForm.addEventListener('submit', e => {
     e.preventDefault();
     controlSearch();
 });
+
 
 // event delegation for btns
 elements.searchResPages.addEventListener('click', e => {
@@ -79,6 +80,7 @@ const controlRecipe = async () => {
         try {
             // Get the recipe data 
             await state.recipe.getRecipe();
+            state.recipe.parseIngredients();
 
             // call CalcTime and CalcServings
             state.recipe.calcTime();

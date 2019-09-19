@@ -31,4 +31,83 @@ export default class Reipe {
     calcServings() {
         this.servings = 4;
     }
+
+    parseIngredients() {
+        const unitLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
+        const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound']; 
+
+        // newIngredient becomes an array de to map function, where it will go throw all ingredience for recipe and copy it to the const
+        const newIngredients =  this.ingredients.map(el => {
+            // Uniform units
+            let ingredient = el.toLowerCase();
+            unitLong.forEach((unit, i) => {
+                ingredient =ingredient.replace(unit, unitsShort[i]);
+            });
+
+            // remove parenthesis
+            ingredient = ingredient.replace(/ *\([^)]*\) */g, ' ');
+
+            // parse ingredients into count , unit and ingredinece
+            const arrIng = ingredient.split(' ');
+            // includes() returns false if there is no index and returns true if it find match and the findIndex will return the index
+            const unitIndex = arrIng.findIndex(el2 => unitsShort.includes(el2));
+
+            let objIng;
+            
+            if(unitIndex > -1) {
+                //there is a unit and count
+                // example for 4 1/2 cups, our count will be [4, 1/2]
+                // example for 4 cups, or count is [4]
+                // example for 1-1/3 
+                /* *** MY SOLUTION HAVE TO CHECK (out of API Calls) ***
+                const arrCount = arrIng.slice(0, unitIndex);
+                let pomCount;
+                if (arrCount.length === 2) {
+                    const pom = arrCount.split('/');
+                    pomCount = parseInt(pom[0]) + (parseInt(pom[1]) / parseInt(pom[2]));
+                } else pomCount = parseInt(arrCount[0]);
+                
+                objIng = {
+                    count: pomCount,
+                    unit: arrCount[unitIndex],
+                    ingredient: arrIng.slice(arrIng[unitIndex - 1]).join(' ')
+                }
+                */
+
+                const arrCount = arrIng.slice(0, unitIndex);
+
+                let count;
+                if (arrCount.length === 1) {
+                    count = eval(arrIng[0].repplace('-', '+'));
+                } else {
+                    count = eval(arrIng.slice(0, unitIndex).join('+'));
+                }
+
+                objIng = {
+                    count,
+                    unit: arrIng[unitIndex],
+                    ingredient: arrIng.slice(arrIng[unitIndex + 1]).join(' ')
+                }
+
+
+            } else if(parseInt(arrIng[0], 10)) {
+                // there is no unit, but there is number on 1st position
+                objIng = {
+                    count: parseInt(arrIng[0], 10),
+                    unit: '',
+                    //entire element except of the 1st one and join them with space
+                    ingredient: arrIng.slice(1).join(' ')
+                }
+            } else if(unitIndex === -1) {
+                // there is no unit and no number on 1st pos
+                objIng = {
+                    count: 1,
+                    unit: '',
+                    ingredient
+                }
+            }
+            return objIng;
+        });
+        this.ingredients = newIngredients;
+    }
 }
