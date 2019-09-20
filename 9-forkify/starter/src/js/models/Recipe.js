@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {key} from '../config' 
 
-export default class Reipe {
+export default class Recipe {
     constructor(id) {
         this.id = id;
     }
@@ -35,13 +35,14 @@ export default class Reipe {
     parseIngredients() {
         const unitLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
         const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound']; 
+        const units = [...unitsShort, 'kg', 'g'];
 
         // newIngredient becomes an array de to map function, where it will go throw all ingredience for recipe and copy it to the const
         const newIngredients =  this.ingredients.map(el => {
             // Uniform units
             let ingredient = el.toLowerCase();
             unitLong.forEach((unit, i) => {
-                ingredient =ingredient.replace(unit, unitsShort[i]);
+                ingredient = ingredient.replace(unit, unitsShort[i]);
             });
 
             // remove parenthesis
@@ -50,7 +51,7 @@ export default class Reipe {
             // parse ingredients into count , unit and ingredinece
             const arrIng = ingredient.split(' ');
             // includes() returns false if there is no index and returns true if it find match and the findIndex will return the index
-            const unitIndex = arrIng.findIndex(el2 => unitsShort.includes(el2));
+            const unitIndex = arrIng.findIndex(el2 => units.includes(el2));
 
             let objIng;
             
@@ -78,7 +79,7 @@ export default class Reipe {
 
                 let count;
                 if (arrCount.length === 1) {
-                    count = eval(arrIng[0].repplace('-', '+'));
+                    count = eval(arrIng[0].replace('-', '+'));
                 } else {
                     count = eval(arrIng.slice(0, unitIndex).join('+'));
                 }
