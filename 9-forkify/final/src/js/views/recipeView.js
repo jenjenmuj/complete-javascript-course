@@ -83,7 +83,7 @@ export const renderRecipe = (recipe, isLiked) => {
         </div>
 
         <div class="recipe__ingredients">
-            <ul class="recipe__ingredient-list">
+        <ul class="recipe__ingredient-list">
                 ${recipe.ingredients.map(el => createIngredient(el)).join('')}
             </ul>
 
