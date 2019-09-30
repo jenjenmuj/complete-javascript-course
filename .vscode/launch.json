@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/6-budgety\\final\\app.js"
+            "program": "${workspaceFolder}/9-forkify\\starter\\src\\js\\index.js"
         }
     ]
 }

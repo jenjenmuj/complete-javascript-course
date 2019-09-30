@@ -1,7 +1,9 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
+import List from './models/List';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as listView from './views/listView';
 import {elements, renderLoader, clearLoader} from './views/base';
 
 // global state of the app
@@ -70,7 +72,7 @@ elements.searchResPages.addEventListener('click', e => {
 const controlRecipe = async () => {
     // Get ID from url 
     const id = window.location.hash.replace('#','');
-    console.log(id);
+    //console.log(id);
 
     if (id) {
         // Prepare the UI for changes
@@ -99,13 +101,50 @@ const controlRecipe = async () => {
         } catch(error) {
             clearLoader();
             alert('Error processing recipe');
-            console.log(error);
+            //console.log(error);
         }
 
     }
+    //console.log(state.recipe);
 };
 
 // window.addEventListener('hashchange', controlRecipe);
 // window.addEventListener('load', controlRecipe);
 // better code than the one above
 ['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
+
+/*
+* List Controller
+*/
+
+const controlList = () => {
+    // Create a new list if htere is non
+    if (!state.list) state.list = new List();
+
+    // Add all ingredients to the list
+    state.recipe.ingredients.forEach(el => {
+        const item = state.list.addItem(el.count, el.unit, el.ingredient);
+        listView.renderItem(item);
+    });
+};
+
+
+// handling recipe button clikcs
+elements.recipe.addEventListener('click', e => {
+    if (e.target.matches('.btn-decrease, .btn-decrease *')) {
+        // Decrease button is clicked
+        if (state.recipe.servings > 1) {
+            state.recipe.updateServings('dec');
+            recipeView.updateServingsIngredients(state.recipe);
+        }
+    } else if (e.target.matches('.btn-increase, .btn-increase *')) {
+        // INcrease button is clicked
+        state.recipe.updateServings('inc');
+        recipeView.updateServingsIngredients(state.recipe);
+    } else if (e.target.matches('.recipe__btn-add, recipe__btn-add *')) {
+        controlList();
+    }
+    //console.log(state.recipe);
+});
+
+window.l =  new List();

@@ -45,6 +45,7 @@ export default class Recipe {
                 ingredient = ingredient.replace(unit, unitsShort[i]);
             });
 
+
             // remove parenthesis
             ingredient = ingredient.replace(/ *\([^)]*\) */g, ' ');
 
@@ -54,6 +55,9 @@ export default class Recipe {
             const unitIndex = arrIng.findIndex(el2 => units.includes(el2));
 
             let objIng;
+
+            //console.log(ingredient);
+            //console.log(unitIndex);
             
             if(unitIndex > -1) {
                 //there is a unit and count
@@ -77,6 +81,8 @@ export default class Recipe {
 
                 const arrCount = arrIng.slice(0, unitIndex);
 
+                //console.log(arrCount);
+
                 let count;
                 if (arrCount.length === 1) {
                     count = eval(arrIng[0].replace('-', '+'));
@@ -87,8 +93,9 @@ export default class Recipe {
                 objIng = {
                     count,
                     unit: arrIng[unitIndex],
-                    ingredient: arrIng.slice(arrIng[unitIndex + 1]).join(' ')
+                    ingredient: arrIng.slice(unitIndex + 1).join(' ')
                 }
+                //console.log(`${objIng} prvni if`);
 
 
             } else if(parseInt(arrIng[0], 10)) {
@@ -99,6 +106,7 @@ export default class Recipe {
                     //entire element except of the 1st one and join them with space
                     ingredient: arrIng.slice(1).join(' ')
                 }
+                //console.log(`${objIng} druhy if: there is no unit, but there is number on 1st position`);
             } else if(unitIndex === -1) {
                 // there is no unit and no number on 1st pos
                 objIng = {
@@ -106,9 +114,24 @@ export default class Recipe {
                     unit: '',
                     ingredient
                 }
+                //console.log(`${objIng} treti if: there is no unit and no number on 1st pos`);
             }
             return objIng;
+
         });
         this.ingredients = newIngredients;
+        console.log(this.ingredients);
+    }
+
+    updateServings (type) {
+        // Servings
+        const newServings = type === 'dec' ? this.servings - 1 : this.servings + 1;
+        
+        //Ingedients
+        this.ingredients.forEach(ing => {
+            ing.count *= (newServings / this.servings);
+        });
+
+        this.servings = newServings;
     }
 }
