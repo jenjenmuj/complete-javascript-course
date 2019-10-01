@@ -128,6 +128,26 @@ const controlList = () => {
     });
 };
 
+//Hnadle dele and udpdate lis tevents
+elements.shopping.addEventListener('click', e => {
+    const id = e.target.closest('.shopping__item').dataset.itemid;
+
+    // handle the delete
+    if (e.target.matches('.shopping__delete, .shopping__delete *')) {
+        // delete from state
+        state.list.deleteItem(id);
+
+        // delete from UI
+        listView.deleteItem(id);
+
+    }
+    //handle the update calue
+     else if (e.target.matches('.shopping__count-value')) {
+        //read the data form interface
+        const val = parseFloat(e.target.value);
+        state.list.updateCount(id, val);
+    }
+});
 
 // handling recipe button clikcs
 elements.recipe.addEventListener('click', e => {
@@ -141,7 +161,7 @@ elements.recipe.addEventListener('click', e => {
         // INcrease button is clicked
         state.recipe.updateServings('inc');
         recipeView.updateServingsIngredients(state.recipe);
-    } else if (e.target.matches('.recipe__btn-add, recipe__btn-add *')) {
+    } else if (e.target.matches('.recipe__btn-add, .recipe__btn-add *')) {
         controlList();
     }
     //console.log(state.recipe);
