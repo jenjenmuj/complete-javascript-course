@@ -17,7 +17,6 @@ Shopping list obect
 Liked recipes
 */
 const state = {};
-window.state = state;
 
 /*
 * Seacrh Controller
@@ -159,10 +158,6 @@ elements.shopping.addEventListener('click', e => {
 /*
 * Likes Controller
 */
-//testing
-state.likes = new Likes();
-likesView.toggleLikeMenuBtn(state.likes.getNumLikes());
-
 const controlLike = () => {
     if(!state.likes) state.likes = new Likes();
     const currentID = state.recipe.id;
@@ -199,6 +194,20 @@ const controlLike = () => {
     likesView.toggleLikeMenuBtn(state.likes.getNumLikes());
 }
 
+// Restore liked recipes on page load
+window.addEventListener('load', () => {
+    state.likes = new Likes();
+
+    //Restore Likes
+    state.likes.readStorage();
+
+    // Toggle like menu button
+    likesView.toggleLikeMenuBtn(state.likes.getNumLikes());
+
+    //redner existing likes
+    state.likes.likes.forEach(like => likesView.renderLike(like));
+});
+
 
 // handling recipe button clikcs
 elements.recipe.addEventListener('click', e => {
@@ -221,5 +230,3 @@ elements.recipe.addEventListener('click', e => {
     }
 
 });
-
-window.l =  new List();
